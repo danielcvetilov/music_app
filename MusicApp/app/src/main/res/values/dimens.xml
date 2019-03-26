@@ -7,4 +7,5 @@
     <dimen name="item_padding">12dp</dimen>
     <dimen name="item_padding_large">24dp</dimen>
     <dimen name="item_margin">8dp</dimen>
+    <dimen name="page_offset">48dp</dimen>
 </resources>

@@ -10,9 +10,9 @@
         android:id="@+id/title_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
         android:textSize="24sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/name_et"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -24,46 +24,51 @@
         android:layout_marginTop="@dimen/item_margin"
         android:gravity="center"
         android:hint="@string/name"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/title_tv" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <RadioGroup
-        android:id="@+id/record_type_rg"
-        android:layout_width="240dp"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:orientation="vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/name_et">
-
-        <RadioButton
-            android:id="@+id/playlist_rb"
-            android:layout_width="wrap_content"
+        <RadioGroup
+            android:id="@+id/record_type_rg"
+            android:layout_width="240dp"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="@string/playlist"
-            android:textSize="18sp" />
+            android:orientation="horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/name_et">
 
-        <RadioButton
-            android:id="@+id/song_rb"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/song"
-            android:textSize="18sp" />
-    </RadioGroup>
+            <RadioButton
+                android:id="@+id/playlist_rb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/item_margin"
+                android:drawableTop="@drawable/ic_audiotrack_accent"
+                android:gravity="center"
+                android:text="@string/playlist"
+                android:textSize="18sp" />
+
+            <RadioButton
+                android:id="@+id/song_rb"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/item_margin"
+                android:drawableTop="@drawable/ic_playlist_accent"
+                android:gravity="center"
+                android:text="@string/song"
+                android:textSize="18sp" />
+        </RadioGroup>
 
     <Button
         android:id="@+id/save_btn"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/item_margin"
+        android:layout_marginBottom="@dimen/page_offset"
         android:text="@string/add_to_library"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/record_type_rg" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

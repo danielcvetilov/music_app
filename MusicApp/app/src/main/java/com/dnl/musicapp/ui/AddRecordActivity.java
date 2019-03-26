@@ -16,6 +16,8 @@ import com.dnl.musicapp.data.Song;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -92,18 +94,24 @@ public class AddRecordActivity extends AppCompatActivity {
     }
 
     private void saveAsSong(String name, MainApp app) {
-        Song song = createSong(name, app.defaultPlaylistId);
-        app.db.saveSong(song);
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            Song song = createSong(name, app.defaultPlaylistId);
+            app.db.saveSong(song);
+        });
     }
 
     private void saveAsPlaylist(String name, MainApp app) {
-        Playlist playlist = new Playlist();
-        playlist.name = name;
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        executor.execute(() -> {
+            Playlist playlist = new Playlist();
+            playlist.name = name;
 
-        app.db.savePlaylist(playlist);
+            app.db.savePlaylist(playlist);
 
-        List<Song> songs = createPlaylistDefaultRecords(playlist);
-        app.db.saveSongs(songs);
+            List<Song> songs = createPlaylistDefaultRecords(playlist);
+            app.db.saveSongs(songs);
+        });
     }
 
     private List<Song> createPlaylistDefaultRecords(Playlist playlist) {
