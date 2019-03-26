@@ -11,10 +11,10 @@ import androidx.room.Update;
 
 @Dao
 public interface PlaylistDao {
-    @Query("SELECT * FROM playlist")
-    LiveData<List<PlaylistWithSongs>> getAll();
+    @Query("SELECT * FROM playlist ")
+    LiveData<List<PlaylistWithSongs>> getAllRecords();
 
-    @Query("SELECT * FROM playlist WHERE is_default = 1")
+    @Query("SELECT * FROM playlist WHERE is_default = 1 LIMIT 1 ")
     Playlist getDefaultPlaylist();
 
     @Insert

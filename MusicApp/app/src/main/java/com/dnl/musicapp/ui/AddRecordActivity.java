@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.dnl.musicapp.MainApp;
 import com.dnl.musicapp.R;
+import com.dnl.musicapp.data.AppDatabase;
 import com.dnl.musicapp.data.Playlist;
 import com.dnl.musicapp.data.Song;
 
@@ -74,16 +75,14 @@ public class AddRecordActivity extends AppCompatActivity {
             return;
         }
 
-        MainApp app = MainApp.instance;
+        AppDatabase db = MainApp.instance.db;
         switch (recordTypeRg.getCheckedRadioButtonId()) {
-            case R.id.playlist_rb: {
-                saveAsPlaylist(name, app);
-            }
-            break;
-            case R.id.song_rb: {
-                saveAsSong(name, app);
-            }
-            break;
+            case R.id.playlist_rb:
+                saveAsPlaylist(db, name);
+                break;
+            case R.id.song_rb:
+                saveAsSong(db, name);
+                break;
             default:
                 Toast.makeText(this, R.string.fill_all_fields, Toast.LENGTH_LONG).show();
                 return;
@@ -93,28 +92,30 @@ public class AddRecordActivity extends AppCompatActivity {
         finish();
     }
 
-    private void saveAsSong(String name, MainApp app) {
+    private void saveAsSong(AppDatabase db, String name) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
-            Song song = createSong(name, app.defaultPlaylistId);
-            app.db.saveSong(song);
+            Playlist defaultPlaylist = db.getDefaultPlaylistOrCreateIfNeeded();
+
+            Song song = createSong(name, defaultPlaylist.id);
+            db.saveSong(song);
         });
     }
 
-    private void saveAsPlaylist(String name, MainApp app) {
+    private void saveAsPlaylist(AppDatabase db, String name) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
             Playlist playlist = new Playlist();
             playlist.name = name;
 
-            app.db.savePlaylist(playlist);
+            db.savePlaylist(playlist);
 
-            List<Song> songs = createPlaylistDefaultRecords(playlist);
-            app.db.saveSongs(songs);
+            List<Song> songs = createSongsForPlaylist(playlist);
+            db.saveSongs(songs);
         });
     }
 
-    private List<Song> createPlaylistDefaultRecords(Playlist playlist) {
+    private List<Song> createSongsForPlaylist(Playlist playlist) {
         Random random = new Random();
         int numberOfSongs = random.nextInt(10) + 1;
 

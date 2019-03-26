@@ -30,6 +30,16 @@ public abstract class AppDatabase extends RoomDatabase {
             saveSong(record);
         }
     }
+
+    public Playlist getDefaultPlaylistOrCreateIfNeeded() {
+        Playlist defaultPlaylist = playlistDao().getDefaultPlaylist();
+        if (defaultPlaylist == null) {
+            defaultPlaylist = Playlist.createDefaultRecord();
+            savePlaylist(defaultPlaylist);
+        }
+
+        return defaultPlaylist;
+    }
 }
 
 

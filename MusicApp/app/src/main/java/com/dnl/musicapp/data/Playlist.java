@@ -24,6 +24,14 @@ public class Playlist implements Parcelable {
     public Playlist() {
     }
 
+    public static Playlist createDefaultRecord() {
+        Playlist defaultPlaylist = new Playlist();
+        defaultPlaylist.name = "Others";
+        defaultPlaylist.isDefault = true;
+
+        return defaultPlaylist;
+    }
+
     public static final Creator CREATOR = new Creator() {
         public Playlist createFromParcel(Parcel in) {
             return new Playlist(in);

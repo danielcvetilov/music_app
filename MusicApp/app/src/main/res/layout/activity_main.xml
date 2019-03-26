@@ -60,6 +60,8 @@
         android:layout_height="match_parent"
         android:childDivider="@null"
         android:divider="@null"
+        android:groupIndicator="@null"
+        android:paddingBottom="64dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
 

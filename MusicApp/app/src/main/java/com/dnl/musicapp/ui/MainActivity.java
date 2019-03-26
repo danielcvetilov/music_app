@@ -7,13 +7,16 @@ import android.widget.ExpandableListView;
 
 import com.dnl.musicapp.MainApp;
 import com.dnl.musicapp.R;
+import com.dnl.musicapp.data.AppDatabase;
 import com.dnl.musicapp.data.PlaylistWithSongs;
+import com.dnl.musicapp.data.Song;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -26,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
     private View noRecordsContainer;
 
     private FloatingActionMenu menuFab;
+    private int lastExpandedGroup = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,37 +61,56 @@ public class MainActivity extends AppCompatActivity {
 
         expandableListView = findViewById(R.id.list_view);
         expandableListView.setAdapter(adapter);
-        expandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-            int previousGroup = -1;
+        expandableListView.setOnGroupExpandListener(this::updateExpansionState);
+        expandableListView.setOnChildClickListener((expandableListView, view, groupPosition, childPosition, childId) -> showSong(groupPosition, childPosition));
 
-            @Override
-            public void onGroupExpand(int groupPosition) {
-                if (groupPosition != previousGroup)
-                    expandableListView.collapseGroup(previousGroup);
-                previousGroup = groupPosition;
-            }
-        });
+        AppDatabase db = MainApp.instance.db;
+        db.playlistDao().getAllRecords().observe(this, this::updateData);
+    }
 
-        MainApp.instance.db.playlistDao().getAll().observe(this, newRecords -> {
-            data.clear();
+    private void updateExpansionState(int groupPosition) {
+        if (groupPosition != lastExpandedGroup)
+            expandableListView.collapseGroup(lastExpandedGroup);
+        lastExpandedGroup = groupPosition;
+    }
 
-            if (newRecords != null) {
-                for (PlaylistWithSongs playlistWithSongs : newRecords) {
-                    if (!playlistWithSongs.playlist.isDefault || playlistWithSongs.songs.size() > 0)
-                        data.add(playlistWithSongs);
-                }
-            }
+    private boolean showSong(int groupPosition, int childPosition) {
+        if (groupPosition < 0 || groupPosition >= data.size())
+            return false;
 
-            adapter.notifyDataSetChanged();
+        PlaylistWithSongs playlistWithSongs = data.get(groupPosition);
+        if (childPosition < 0 || childPosition >= playlistWithSongs.songs.size())
+            return false;
 
-            if (data.size() == 0) {
-                expandableListView.setVisibility(View.GONE);
-                noRecordsContainer.setVisibility(View.VISIBLE);
-            } else {
-                noRecordsContainer.setVisibility(View.GONE);
-                expandableListView.setVisibility(View.VISIBLE);
-            }
-        });
+        Song song = playlistWithSongs.songs.get(childPosition);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+        alertDialogBuilder.setTitle(playlistWithSongs.playlist.name);
+        alertDialogBuilder.setMessage(song.name);
+        alertDialogBuilder.setPositiveButton(android.R.string.ok, null);
+
+        alertDialogBuilder.show();
+        return true;
+    }
+
+    private void updateData(List<PlaylistWithSongs> newRecords) {
+        data.clear();
+
+        if (newRecords != null && newRecords.size() > 0)
+            data.addAll(newRecords);
+
+        adapter.notifyDataSetChanged();
+        showNoRecordsLabelIfNeeded();
+    }
+
+    private void showNoRecordsLabelIfNeeded() {
+        if (data.size() == 0) {
+            expandableListView.setVisibility(View.GONE);
+            noRecordsContainer.setVisibility(View.VISIBLE);
+        } else {
+            noRecordsContainer.setVisibility(View.GONE);
+            expandableListView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void createNewRecord(int recordType) {
